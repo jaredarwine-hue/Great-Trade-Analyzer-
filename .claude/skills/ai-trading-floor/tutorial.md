@@ -131,9 +131,19 @@ Narrate it: "I made a folder called `my-trading-lab` to keep your work tidy, and
 `venv` inside it — that's a private toolbox so these libraries don't clash with anything
 else on your computer."
 
+> **`<py>` — the venv's Python.** Every command below writes `<py>`. Resolve it ONCE for
+> the user's platform and use it verbatim from then on:
+> - **macOS / Linux:** `my-trading-lab/venv/bin/python`
+> - **Windows:** `my-trading-lab\venv\Scripts\python.exe` (there is no `bin/` directory
+>   on Windows — the interpreter lives in `Scripts\`, and `python3` is usually just
+>   `python`)
+>
+> Check which platform you're on before running anything (`uname` / the shell in use).
+> Getting this wrong produces a confusing "file not found" on the very first install step.
+
 **3. Install the kit's libraries into that toolbox.**
 ```bash
-my-trading-lab/venv/bin/python -m pip install --quiet -r <skill>/requirements.txt
+<py> -m pip install --quiet -r <skill>/requirements.txt
 ```
 Narrate WHY each piece matters, briefly: "I just installed pandas + numpy (for crunching
 price tables), matplotlib + plotly (for the charts and the interactive report), pyarrow
@@ -142,10 +152,10 @@ whole toolbox — a one-time setup."
 
 **4. Confirm it worked.**
 ```bash
-my-trading-lab/venv/bin/python -c "import pandas, numpy, matplotlib, plotly, yfinance; print('Toolbox ready.')"
+<py> -c "import pandas, numpy, matplotlib, plotly, yfinance; print('Toolbox ready.')"
 ```
-Report a friendly pass. From here on, run the kit's Python as
-`my-trading-lab/venv/bin/python` from inside the user's current directory (so outputs land
+Report a friendly pass. From here on, run the kit's Python as `<py>` (resolved above)
+from inside the user's current directory (so outputs land
 in `./data`, `./results`, `./reports`). Tell the user step ① is done (☑) and confirm
 before step ②.
 
@@ -156,16 +166,18 @@ before step ②.
 Goal: get real price history onto the machine in the kit's format. **Ask the user which
 source they want** before doing anything:
 
-> Two ways to get data:
+> Three ways to get data:
 > **A (recommended): Free Yahoo Finance** — no account, no API key, great for daily data.
-> **B: Your own provider** (Polygon, Alpaca, Tiingo, etc.) — if you already pay for data
+> **B: A file you already have** — a CSV from Yahoo's website "Download" button, a broker
+> export, or a spreadsheet. No network needed. Good when A is blocked.
+> **C: Your own provider** (Polygon, Alpaca, Tiingo, etc.) — if you already pay for data
 > and want full intraday history. A bit more setup.
 
 ### Option A — free Yahoo Finance (default)
 
 Fetch a well-known ticker (start with one — it proves the pipe works):
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/fetch_data.py --tickers AAPL --period 3y
+<py> <skill>/scripts/fetch_data.py --tickers AAPL --period 3y
 ```
 Then narrate the printed output: "That downloaded ~3 years of Apple's daily prices and
 saved them to `./data/AAPL.parquet`. Each row is one trading day — the open, high, low,
@@ -177,7 +189,30 @@ ls -lh data/AAPL.parquet
 Tell them they can add any ticker later by re-running with a different `--tickers`. Mark
 ② done (☑), confirm, go to step ③.
 
-### Option B — bring your own provider (adapter flow)
+### Option B — import a CSV you already have (no network)
+
+Use this when Option A fails — a locked-down network, an offline machine, or a datacenter
+IP that Yahoo rate-limits (a plain HTTP 429, or yfinance reporting an `SSLError` /
+connection reset). It is also the fastest path for broker exports.
+
+Tell the user where to get a file without any coding: on Yahoo Finance, open the ticker's
+**Historical Data** tab and click **Download**; most brokers (Fidelity, Schwab, IBKR) export
+price history to CSV too. Then:
+
+```bash
+<py> <skill>/scripts/import_csv.py ~/Downloads/AAPL.csv
+```
+
+It auto-maps the common column namings, strips `$`/comma formatting, sorts and de-dupes,
+and validates against `DATA_CONTRACT.md` before writing `./data/AAPL.parquet` — so a bad
+file fails here with a clear reason rather than midway through a backtest. The ticker comes
+from the filename unless you pass `--ticker`. Add `--dry-run` to check a file without
+writing, and `--interval 15m` for intraday (timestamps are treated as Eastern Time).
+
+Note it deliberately maps `Close`, never `Adj Close` — the two are different series and
+silently picking the adjusted one changes every result. Then continue to ③.
+
+### Option C — bring your own provider (adapter flow)
 
 1. Ask the user to put their API key in a `.env` file in their working directory (keep it
    out of git). Tell them the exact line, e.g. `POLYGON_API_KEY=...`. Do NOT print/echo it.
@@ -200,7 +235,7 @@ Goal: prove the whole pipeline works and show the user a real result + interacti
 
 Run the one-command pipeline on the data you just fetched:
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/run_pipeline.py --ticker AAPL --strategy sma_crossover
+<py> <skill>/scripts/run_pipeline.py --ticker AAPL --strategy sma_crossover
 ```
 Narrate what it does: "This runs three steps for you — it makes sure the data's there,
 backtests a simple '20/50 moving-average crossover' (buy when the short-term average rises
@@ -237,7 +272,7 @@ to the toolkit. Built-in strategies:
 
 Take their idea, pick the closest one, translate their numbers into flags, and run:
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/run_pipeline.py --ticker <THEIR_TICKER> --strategy <NAME> <FLAGS>
+<py> <skill>/scripts/run_pipeline.py --ticker <THEIR_TICKER> --strategy <NAME> <FLAGS>
 ```
 Then point them back to the SAME `./reports/dashboard.html` — the new strategy just appears
 in it (grouped by asset class; click to see its chart). Everything stays in `./data`,
