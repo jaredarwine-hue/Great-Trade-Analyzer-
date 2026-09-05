@@ -15,3 +15,6 @@ reports/
 
 # OS cruft
 .DS_Store
+
+# Local, per-machine Claude Code settings (permissions, env) — not shared.
+.claude/settings.local.json
