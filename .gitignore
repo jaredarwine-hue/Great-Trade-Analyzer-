@@ -16,5 +16,13 @@ reports/
 # OS cruft
 .DS_Store
 
+# Default output paths for render_chart.py (--out chart.png) and report.py
+# (--out report.html) — both land in the CWD root, not under reports/.
+/chart.png
+/report.html
+
+# Tutorial workspace (holds the venv).
+/my-trading-lab/
+
 # Local, per-machine Claude Code settings (permissions, env) — not shared.
 .claude/settings.local.json
