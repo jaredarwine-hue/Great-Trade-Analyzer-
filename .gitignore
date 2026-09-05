@@ -1,0 +1,17 @@
+# Python bytecode caches — never commit these.
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Toolkit outputs — these are regenerated from the scripts, so they don't belong
+# in git. Every script writes CWD-relative, i.e. into this folder.
+data/
+results/
+reports/
+
+# OS cruft
+.DS_Store

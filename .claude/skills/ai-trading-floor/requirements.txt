@@ -1,0 +1,8 @@
+# AI Trading Floor — bundled toolkit dependencies.
+# Install with:  pip install -r requirements.txt
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+pyarrow>=12.0
+yfinance>=0.2
+plotly>=5.18
