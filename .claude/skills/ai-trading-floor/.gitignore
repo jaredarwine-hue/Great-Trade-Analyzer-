@@ -1,0 +1,10 @@
+# Python bytecode caches — never commit these.
+__pycache__/
+*.pyc
+*.pyo
+
+# Beginner workspace outputs (these land in the user's CWD, not here, but ignore
+# them anyway in case anyone runs the scripts from inside the skill folder).
+data/
+results/
+reports/
