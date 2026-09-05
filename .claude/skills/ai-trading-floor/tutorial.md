@@ -131,9 +131,19 @@ Narrate it: "I made a folder called `my-trading-lab` to keep your work tidy, and
 `venv` inside it — that's a private toolbox so these libraries don't clash with anything
 else on your computer."
 
+> **`<py>` — the venv's Python.** Every command below writes `<py>`. Resolve it ONCE for
+> the user's platform and use it verbatim from then on:
+> - **macOS / Linux:** `my-trading-lab/venv/bin/python`
+> - **Windows:** `my-trading-lab\venv\Scripts\python.exe` (there is no `bin/` directory
+>   on Windows — the interpreter lives in `Scripts\`, and `python3` is usually just
+>   `python`)
+>
+> Check which platform you're on before running anything (`uname` / the shell in use).
+> Getting this wrong produces a confusing "file not found" on the very first install step.
+
 **3. Install the kit's libraries into that toolbox.**
 ```bash
-my-trading-lab/venv/bin/python -m pip install --quiet -r <skill>/requirements.txt
+<py> -m pip install --quiet -r <skill>/requirements.txt
 ```
 Narrate WHY each piece matters, briefly: "I just installed pandas + numpy (for crunching
 price tables), matplotlib + plotly (for the charts and the interactive report), pyarrow
@@ -142,10 +152,10 @@ whole toolbox — a one-time setup."
 
 **4. Confirm it worked.**
 ```bash
-my-trading-lab/venv/bin/python -c "import pandas, numpy, matplotlib, plotly, yfinance; print('Toolbox ready.')"
+<py> -c "import pandas, numpy, matplotlib, plotly, yfinance; print('Toolbox ready.')"
 ```
-Report a friendly pass. From here on, run the kit's Python as
-`my-trading-lab/venv/bin/python` from inside the user's current directory (so outputs land
+Report a friendly pass. From here on, run the kit's Python as `<py>` (resolved above)
+from inside the user's current directory (so outputs land
 in `./data`, `./results`, `./reports`). Tell the user step ① is done (☑) and confirm
 before step ②.
 
@@ -165,7 +175,7 @@ source they want** before doing anything:
 
 Fetch a well-known ticker (start with one — it proves the pipe works):
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/fetch_data.py --tickers AAPL --period 3y
+<py> <skill>/scripts/fetch_data.py --tickers AAPL --period 3y
 ```
 Then narrate the printed output: "That downloaded ~3 years of Apple's daily prices and
 saved them to `./data/AAPL.parquet`. Each row is one trading day — the open, high, low,
@@ -200,7 +210,7 @@ Goal: prove the whole pipeline works and show the user a real result + interacti
 
 Run the one-command pipeline on the data you just fetched:
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/run_pipeline.py --ticker AAPL --strategy sma_crossover
+<py> <skill>/scripts/run_pipeline.py --ticker AAPL --strategy sma_crossover
 ```
 Narrate what it does: "This runs three steps for you — it makes sure the data's there,
 backtests a simple '20/50 moving-average crossover' (buy when the short-term average rises
@@ -237,7 +247,7 @@ to the toolkit. Built-in strategies:
 
 Take their idea, pick the closest one, translate their numbers into flags, and run:
 ```bash
-my-trading-lab/venv/bin/python <skill>/scripts/run_pipeline.py --ticker <THEIR_TICKER> --strategy <NAME> <FLAGS>
+<py> <skill>/scripts/run_pipeline.py --ticker <THEIR_TICKER> --strategy <NAME> <FLAGS>
 ```
 Then point them back to the SAME `./reports/dashboard.html` — the new strategy just appears
 in it (grouped by asset class; click to see its chart). Everything stays in `./data`,
