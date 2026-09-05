@@ -35,6 +35,7 @@ user's venv first, then:
 | Script | What it does |
 | --- | --- |
 | `scripts/fetch_data.py` | Download free Yahoo Finance bars → `./data/<TICKER>.parquet` |
+| `scripts/import_csv.py` | Import a CSV/Excel export → `./data/<TICKER>.parquet`. The NO-NETWORK data path — use when Yahoo is unreachable or the prices come from a broker/provider export. Auto-maps column names, never mistakes `Adj Close` for `Close`. |
 | `scripts/backtest.py` | Run a built-in strategy on a parquet → `./results/<...>.json`. `simulate()` takes an optional `stop` Series (ATR stops). |
 | `scripts/render_chart.py` | Dark-theme candlestick PNG (+ trade markers, MAs, cutoff) |
 | `scripts/report.py` | Interactive offline Plotly HTML for ONE strategy |

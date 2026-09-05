@@ -18,6 +18,7 @@ unchanged in any fresh project. Deps: `../requirements.txt`.
 | Script | Does |
 | --- | --- |
 | `fetch_data.py` | Yahoo Finance bars → `./data/<TICKER>.parquet` (version-robust to yfinance's unnamed-index change) |
+| `import_csv.py` | CSV/Excel export → `./data/<TICKER>.parquet` (no network needed; column auto-mapping, `--dry-run` to check first) |
 | `backtest.py` | Run one strategy → `./results/<...>.json`. `simulate()` takes an optional `stop` Series (intrabar ATR stops: exit `min(stop,Open)` on `Low<=stop`, `assert stop<entry`, inverted stops skipped, ambiguous bars counted). |
 | `indicators.py` | The indicator library (this doc) |
 | `render_chart.py` | Candlestick PNG (MAs, trade markers, `--cutoff`) — see `../CHART_RENDERER.md` |

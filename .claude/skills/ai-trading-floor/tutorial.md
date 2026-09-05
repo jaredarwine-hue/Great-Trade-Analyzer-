@@ -166,9 +166,11 @@ before step ②.
 Goal: get real price history onto the machine in the kit's format. **Ask the user which
 source they want** before doing anything:
 
-> Two ways to get data:
+> Three ways to get data:
 > **A (recommended): Free Yahoo Finance** — no account, no API key, great for daily data.
-> **B: Your own provider** (Polygon, Alpaca, Tiingo, etc.) — if you already pay for data
+> **B: A file you already have** — a CSV from Yahoo's website "Download" button, a broker
+> export, or a spreadsheet. No network needed. Good when A is blocked.
+> **C: Your own provider** (Polygon, Alpaca, Tiingo, etc.) — if you already pay for data
 > and want full intraday history. A bit more setup.
 
 ### Option A — free Yahoo Finance (default)
@@ -187,7 +189,30 @@ ls -lh data/AAPL.parquet
 Tell them they can add any ticker later by re-running with a different `--tickers`. Mark
 ② done (☑), confirm, go to step ③.
 
-### Option B — bring your own provider (adapter flow)
+### Option B — import a CSV you already have (no network)
+
+Use this when Option A fails — a locked-down network, an offline machine, or a datacenter
+IP that Yahoo rate-limits (a plain HTTP 429, or yfinance reporting an `SSLError` /
+connection reset). It is also the fastest path for broker exports.
+
+Tell the user where to get a file without any coding: on Yahoo Finance, open the ticker's
+**Historical Data** tab and click **Download**; most brokers (Fidelity, Schwab, IBKR) export
+price history to CSV too. Then:
+
+```bash
+<py> <skill>/scripts/import_csv.py ~/Downloads/AAPL.csv
+```
+
+It auto-maps the common column namings, strips `$`/comma formatting, sorts and de-dupes,
+and validates against `DATA_CONTRACT.md` before writing `./data/AAPL.parquet` — so a bad
+file fails here with a clear reason rather than midway through a backtest. The ticker comes
+from the filename unless you pass `--ticker`. Add `--dry-run` to check a file without
+writing, and `--interval 15m` for intraday (timestamps are treated as Eastern Time).
+
+Note it deliberately maps `Close`, never `Adj Close` — the two are different series and
+silently picking the adjusted one changes every result. Then continue to ③.
+
+### Option C — bring your own provider (adapter flow)
 
 1. Ask the user to put their API key in a `.env` file in their working directory (keep it
    out of git). Tell them the exact line, e.g. `POLYGON_API_KEY=...`. Do NOT print/echo it.
